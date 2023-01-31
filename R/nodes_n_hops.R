@@ -1,3 +1,141 @@
+#' convert to tidygraph
+#'
+#' convert a STRING data.frame to a tidygraph for use in other applications
+#'
+#' @param string_data a data.frame of STRING links
+#' @param use_weights a column of the data.frame to use for weights. If NULL, value of 1 is used.
+#' @export
+#' @return tidygraph
+string_2_tidygraph = function(string_data, use_weights = NULL){
+  stopifnot(is.data.frame(string_data))
+  string_edges = string_data[, c(1,2)]
+  names(string_edges) = c("from", "to")
+  if (is.null(use_weights)) {
+    string_edges$weight = 1
+  } else {
+    if (use_weights %in% names(string_data)) {
+      string_edges$weight = string_data[[use_weights]]
+    }
+  }
+
+
+  string_graph = tidygraph::as_tbl_graph(string_edges, directed = FALSE)
+  string_graph
+}
+
+
+#' find nodes within N hops
+#'
+#' Find the paths from start_nodes to end_nodes that are within N nodes of the start.
+#'
+#' @param tidy_graph the graph to query
+#' @param n_hops how many intermediate nodes to cross to the end nodes
+#' @param start_nodes the starting nodes (defaults to all nodes)
+#' @param end_nodes the ending nodes (defaults to starting nodes)
+#' @param exclude_self should circular paths back to the start node be excluded? (default = TRUE)
+#'
+#' @details This algorithm seeks to find all paths that traverse **up-to** N intermediate nodes between
+#'   the provided start and end nodes. As the edge paths are built up, a tibble of edges is generated
+#'   that includes `from.0` to `from.N` (where N is the number of intermediate nodes, see `n_hop`),
+#'   to finally `to`, describing the traversal of nodes.
+#'
+#'   **Note** that the resultant edge set in the graph may include more than these edges, as the filtering of the graph
+#'   is done based on the edges found, and not by the subset of edges. Filtering of the graph by
+#'   the found edges may be implemented at a later date.
+#'
+#'   Returned is a list with:
+#'   * graph: the filtered graph that contains only those nodes that were found by the hopping algorithm
+#'   * node_path_id: the paths found and identified by node numbers
+#'   * node_path_name: the paths found and identified by node names from the graph
+#'
+#' @return list
+#' @export
+find_nodes_n_hops = function(tidy_graph, n_hops = 1, start_nodes = NULL, end_nodes = NULL, exclude_self = TRUE)
+{
+  node_df = tidy_graph %>%
+    tidygraph::activate(nodes) %>%
+    tibble::as_tibble()
+  edge_df = tidy_graph %>%
+    tidygraph::activate(edges) %>%
+    tibble::as_tibble() %>%
+    dplyr::select(from, to)
+
+  if (is.null(start_nodes)) {
+    start_nodes = node_df$name
+  }
+
+  if (is.null(end_nodes)) {
+    end_nodes = start_nodes
+  }
+
+  node_df$vertex = seq(1, nrow(node_df))
+
+  node_df_start = node_df %>%
+    dplyr::filter(name %in% start_nodes)
+  node_df_end = node_df %>%
+    dplyr::filter(name %in% end_nodes)
+
+  hop_edges = edge_df %>%
+    dplyr::filter(from %in% node_df_start$vertex) %>%
+    dplyr::mutate(from.0 = from,
+                  from = NULL)
+  ihop = 0
+  while (ihop < n_hops) {
+    ihop = ihop + 1
+    join_edges = c("to" = "from")
+    hop_edges = dplyr::inner_join(hop_edges, edge_df, by = join_edges)
+    hop_edges = rename_cols(hop_edges, c("to", "to.y"), c(paste0("from.", ihop), "to"))
+    hop_edges = unique(hop_edges)
+    if (exclude_self) {
+      from_locs = grep("from", names(hop_edges))
+      match_self = hop_edges[[from_locs[1]]] == hop_edges[["to"]]
+      for (ifrom in from_locs) {
+        match_self = match_self | (hop_edges[[ifrom]] == hop_edges[["to"]])
+      }
+      hop_edges = hop_edges[!match_self, ]
+    }
+  }
+
+  hop_edges = hop_edges %>%
+    dplyr::filter(to %in% node_df_end$vertex)
+
+  all_edge_vertices = unique(unlist(hop_edges))
+
+  node_df_out = node_df %>%
+    dplyr::filter(vertex %in% all_edge_vertices)
+  edge_df_out = edge_df %>%
+    dplyr::filter((from %in% all_edge_vertices) & (to %in% all_edge_vertices))
+
+  ordered_edges = order(names(hop_edges))
+  hop_edges = hop_edges[, ordered_edges]
+  hop_edges2 = purrr::map_dfc(hop_edges, function(in_nodes){
+    tmp_in = tibble::tibble(vertex = in_nodes)
+    tmp_nodes = dplyr::left_join(tmp_in, node_df[, c("name", "vertex")], by = "vertex")
+    tmp_nodes$name
+  })
+
+  out_graph = tidy_graph %>%
+    tidygraph::activate(nodes) %>%
+    dplyr::filter(name %in% node_df_out$name)
+
+  list(graph = out_graph,
+       n_hops = n_hops,
+       vertex_path_id = hop_edges,
+       vertex_path_name = hop_edges2)
+
+}
+
+rename_cols = function(in_tibble, old_names, new_names){
+  for (iname in seq_along(old_names)) {
+    tmp_old = old_names[iname]
+    tmp_new = new_names[iname]
+    match_old = which(names(in_tibble) %in% tmp_old)
+    names(in_tibble)[match_old] = tmp_new
+  }
+  in_tibble
+}
+
+
 #' strip species id from identifier
 #'
 #' given a set of STRING ID's, remove the species taxonomy id part to get an ENSEMBL

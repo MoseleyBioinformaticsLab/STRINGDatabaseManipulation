@@ -2,8 +2,10 @@
 
 export(find_edges)
 export(find_intersecting_nodes)
+export(find_nodes_n_hops)
 export(process_string_data)
 export(process_string_id)
 export(string_2_graphBAM)
+export(string_2_tidygraph)
 export(strip_species)
 import(graph)
