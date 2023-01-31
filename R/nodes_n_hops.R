@@ -52,12 +52,12 @@ string_2_tidygraph = function(string_data, use_weights = NULL){
 #' @export
 find_nodes_n_hops = function(tidy_graph, n_hops = 1, start_nodes = NULL, end_nodes = NULL, exclude_self = TRUE)
 {
-  node_df = tidy_graph %>%
-    tidygraph::activate(nodes) %>%
+  node_df = tidy_graph |>
+    tidygraph::activate(nodes) |>
     tibble::as_tibble()
-  edge_df = tidy_graph %>%
-    tidygraph::activate(edges) %>%
-    tibble::as_tibble() %>%
+  edge_df = tidy_graph |>
+    tidygraph::activate(edges) |>
+    tibble::as_tibble() |>
     dplyr::select(from, to)
 
   if (is.null(start_nodes)) {
@@ -70,13 +70,13 @@ find_nodes_n_hops = function(tidy_graph, n_hops = 1, start_nodes = NULL, end_nod
 
   node_df$vertex = seq(1, nrow(node_df))
 
-  node_df_start = node_df %>%
+  node_df_start = node_df |>
     dplyr::filter(name %in% start_nodes)
-  node_df_end = node_df %>%
+  node_df_end = node_df |>
     dplyr::filter(name %in% end_nodes)
 
-  hop_edges = edge_df %>%
-    dplyr::filter(from %in% node_df_start$vertex) %>%
+  hop_edges = edge_df |>
+    dplyr::filter(from %in% node_df_start$vertex) |>
     dplyr::mutate(from.0 = from,
                   from = NULL)
   ihop = 0
@@ -96,14 +96,14 @@ find_nodes_n_hops = function(tidy_graph, n_hops = 1, start_nodes = NULL, end_nod
     }
   }
 
-  hop_edges = hop_edges %>%
+  hop_edges = hop_edges |>
     dplyr::filter(to %in% node_df_end$vertex)
 
   all_edge_vertices = unique(unlist(hop_edges))
 
-  node_df_out = node_df %>%
+  node_df_out = node_df |>
     dplyr::filter(vertex %in% all_edge_vertices)
-  edge_df_out = edge_df %>%
+  edge_df_out = edge_df |>
     dplyr::filter((from %in% all_edge_vertices) & (to %in% all_edge_vertices))
 
   ordered_edges = order(names(hop_edges))
@@ -114,8 +114,8 @@ find_nodes_n_hops = function(tidy_graph, n_hops = 1, start_nodes = NULL, end_nod
     tmp_nodes$name
   })
 
-  out_graph = tidy_graph %>%
-    tidygraph::activate(nodes) %>%
+  out_graph = tidy_graph |>
+    tidygraph::activate(nodes) |>
     dplyr::filter(name %in% node_df_out$name)
 
   list(graph = out_graph,
