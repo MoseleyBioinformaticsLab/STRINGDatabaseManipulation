@@ -1,6 +1,6 @@
 Package: STRINGDatabaseManipulation
 Title: Provides Utilities for Working With STRING Data
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: person("Robert", "M", "Flight", email = "rflight79@gmail.com", role = c("aut", "cre"))
 Description: Provides methods and utilities for working with STRING data
   from the STRING protein-protein database.
@@ -8,5 +8,10 @@ Depends: R (>= 3.2.0)
 License: MIT + file LICENSE
 LazyData: true
 Suggests: testthat
-Imports: graph
-RoxygenNote: 6.1.1
+Imports: 
+    dplyr,
+    graph,
+    tibble,
+    tidygraph
+RoxygenNote: 7.2.1
+Encoding: UTF-8

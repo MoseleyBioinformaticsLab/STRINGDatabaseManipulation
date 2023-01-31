@@ -6,10 +6,10 @@
 #' @export
 #' @return data.frame
 #'
-process_string_data <- function(string_file){
+process_string_data = function(string_file){
   stopifnot(file.exists(string_file))
 
-  string_data <- read.table(string_file, header = TRUE, sep = " ", stringsAsFactors = FALSE)
+  string_data = read.table(string_file, header = TRUE, sep = " ", stringsAsFactors = FALSE)
   return(string_data)
 }
 
@@ -22,10 +22,10 @@ process_string_data <- function(string_file){
 #' @export
 #' @return data.frame
 #'
-process_string_id <- function(string_file){
+process_string_id = function(string_file){
   stopifnot(file.exists(string_file))
 
-  string_id <- read.table(string_file, sep = "\t", header = FALSE, stringsAsFactors = FALSE, quote = "", fill = TRUE)
-  names(string_id) <- c("string", "other", "type")
+  string_id = read.table(string_file, sep = "\t", header = FALSE, stringsAsFactors = FALSE, quote = "", fill = TRUE)
+  names(string_id) = c("string", "other", "type")
   return(string_id)
 }

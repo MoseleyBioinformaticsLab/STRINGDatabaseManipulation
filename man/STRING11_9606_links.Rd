@@ -4,7 +4,8 @@
 \name{STRING11_9606_links}
 \alias{STRING11_9606_links}
 \title{STRING11_9606_links}
-\format{A data.frame with 10000 rows and 10 variables:
+\format{
+A data.frame with 10000 rows and 10 variables:
 \describe{
   \item{protein1}{first node in edge}
   \item{protein2}{second node in edge}
@@ -17,7 +18,8 @@
   \item{textmining}{score from textmining}
   \item{combined_score}{total combined score from all evidences}}
 
-  Processed by RMF}
+  Processed by RMF
+}
 \source{
 \url{https://stringdb-static.org/download/protein.links.detailed.v11.0/9606.protein.links.detailed.v11.0.txt.gz}
 }
