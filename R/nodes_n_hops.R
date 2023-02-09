@@ -34,12 +34,12 @@ string_2_tidygraph = function(string_data, use_weights = NULL, directed = FALSE)
 #' @param tidy_graph the graph to query
 #' @param n_hops how many intermediate nodes to cross to the end nodes
 #' @param start_nodes the starting nodes (defaults to all nodes)
-#' @param end_nodes the ending nodes (defaults to starting nodes)
+#' @param end_nodes the ending nodes (defaults to all nodes in the graph)
 #' @param exclude_self should circular paths back to the start node be excluded? (default = TRUE)
 #'
 #' @details This algorithm seeks to find all paths that traverse **up-to** N intermediate nodes between
 #'   the provided start and end nodes. As the edge paths are built up, a tibble of edges is generated
-#'   that includes `from.0` to `from.N` (where N is the number of intermediate nodes, see `n_hop`),
+#'   that includes `from.0` to `from.N` (where N is the number of intermediate nodes, see `n_hops`),
 #'   to finally `to`, describing the traversal of nodes.
 #'
 #'   **Note** that the resultant edge set in the graph may include more than these edges, as the filtering of the graph
@@ -89,7 +89,7 @@ find_nodes_n_hops = function(tidy_graph, n_hops = 1, start_nodes = NULL, end_nod
   }
 
   if (is.null(end_nodes)) {
-    end_nodes = start_nodes
+    end_nodes = node_df$name
   }
 
   node_df$vertex = seq(1, nrow(node_df))
@@ -185,6 +185,7 @@ strip_species = function(string_id){
 #' @return graphBAM graph
 #' @import graph
 string_2_graphBAM = function(string_data, use_weights = NULL){
+  .Deprecated("string_2_tidygraph")
   stopifnot(is.data.frame(string_data))
   string_edges = string_data[, c(1,2)]
   names(string_edges) = c("from", "to")
@@ -238,7 +239,7 @@ string_2_graphBAM = function(string_data, use_weights = NULL){
 #'
 #' find_edges(link_graph, start_nodes, n_hop, end_nodes, drop_same_after_2 = FALSE)
 find_edges = function(in_graph, start_nodes, n_hop = 1, end_nodes = NULL, drop_same_after_2 = TRUE){
-
+  .Deprecated("find_nodes_n_hops")
   stopifnot(class(in_graph) == "graphBAM")
   all_nodes = nodes(in_graph)
   if (is.null(end_nodes)) {

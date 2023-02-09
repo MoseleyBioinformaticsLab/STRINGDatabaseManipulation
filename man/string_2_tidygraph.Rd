@@ -4,12 +4,14 @@
 \alias{string_2_tidygraph}
 \title{convert to tidygraph}
 \usage{
-string_2_tidygraph(string_data, use_weights = NULL)
+string_2_tidygraph(string_data, use_weights = NULL, directed = FALSE)
 }
 \arguments{
 \item{string_data}{a data.frame of STRING links}
 
 \item{use_weights}{a column of the data.frame to use for weights. If NULL, value of 1 is used.}
+
+\item{directed}{is this a directed or undirected graph? (STRING is normally undirected)}
 }
 \value{
 tidygraph

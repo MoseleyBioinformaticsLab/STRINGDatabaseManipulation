@@ -19,7 +19,7 @@ find_nodes_n_hops(
 
 \item{start_nodes}{the starting nodes (defaults to all nodes)}
 
-\item{end_nodes}{the ending nodes (defaults to starting nodes)}
+\item{end_nodes}{the ending nodes (defaults to all nodes in the graph)}
 
 \item{exclude_self}{should circular paths back to the start node be excluded? (default = TRUE)}
 }
@@ -32,7 +32,7 @@ Find the paths from start_nodes to end_nodes that are within N nodes of the star
 \details{
 This algorithm seeks to find all paths that traverse **up-to** N intermediate nodes between
   the provided start and end nodes. As the edge paths are built up, a tibble of edges is generated
-  that includes `from.0` to `from.N` (where N is the number of intermediate nodes, see `n_hop`),
+  that includes `from.0` to `from.N` (where N is the number of intermediate nodes, see `n_hops`),
   to finally `to`, describing the traversal of nodes.
 
   **Note** that the resultant edge set in the graph may include more than these edges, as the filtering of the graph
