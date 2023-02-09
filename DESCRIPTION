@@ -1,6 +1,6 @@
 Package: STRINGDatabaseManipulation
 Title: Provides Utilities for Working With STRING Data
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: person(given = c("Robert", "M"), family = "Flight", email =
         "rflight79@gmail.com", role = c("aut", "cre"))
 Description: Provides methods and utilities for working with STRING
@@ -9,6 +9,6 @@ Depends: R (>= 3.2.0)
 License: MIT + file LICENSE
 LazyData: true
 Suggests: testthat
-Imports: dplyr, graph, tibble, tidygraph
+Imports: dplyr, graph, igraph, tibble, tidygraph
 RoxygenNote: 7.2.1
 Encoding: UTF-8

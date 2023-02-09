@@ -4,9 +4,10 @@
 #'
 #' @param string_data a data.frame of STRING links
 #' @param use_weights a column of the data.frame to use for weights. If NULL, value of 1 is used.
+#' @param directed is this a directed or undirected graph? (STRING is normally undirected)
 #' @export
 #' @return tidygraph
-string_2_tidygraph = function(string_data, use_weights = NULL){
+string_2_tidygraph = function(string_data, use_weights = NULL, directed = FALSE){
   stopifnot(is.data.frame(string_data))
   string_edges = string_data[, c(1,2)]
   names(string_edges) = c("from", "to")
@@ -18,8 +19,10 @@ string_2_tidygraph = function(string_data, use_weights = NULL){
     }
   }
 
+  string_graph = igraph::graph_from_data_frame(string_edges, directed = directed) |>
+    igraph::simplify() |>
+    tidygraph::as_tbl_graph()
 
-  string_graph = tidygraph::as_tbl_graph(string_edges, directed = FALSE)
   string_graph
 }
 
@@ -55,10 +58,31 @@ find_nodes_n_hops = function(tidy_graph, n_hops = 1, start_nodes = NULL, end_nod
   node_df = tidy_graph |>
     tidygraph::activate(nodes) |>
     tibble::as_tibble()
-  edge_df = tidy_graph |>
-    tidygraph::activate(edges) |>
-    tibble::as_tibble() |>
-    dplyr::select(from, to)
+
+  # All of the STRING based graphs SHOULD be undirected, but in case someone wants
+  # to work with one that is directed, well, here they go.
+  if (tidygraph::with_graph(tidy_graph, tidygraph::graph_is_directed())) {
+    edge_df = tidy_graph |>
+      tidygraph::activate(edges) |>
+      tibble::as_tibble() |>
+      dplyr::select(from, to)
+  } else {
+    edge_df1 = tidy_graph |>
+      tidygraph::activate(edges) |>
+      tibble::as_tibble() |>
+      dplyr::select(from, to)
+    edge_df2 = edge_df1 |>
+      dplyr::transmute(from2 = to,
+                       to2 = from,
+                       from = from2,
+                       to = to2) |>
+      dplyr::select(from, to)
+
+    edge_df = dplyr::bind_rows(edge_df1,
+                               edge_df2)
+  }
+
+
 
   if (is.null(start_nodes)) {
     start_nodes = node_df$name
