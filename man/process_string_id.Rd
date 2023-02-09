@@ -2,17 +2,17 @@
 % Please edit documentation in R/raw_processing.R
 \name{process_string_id}
 \alias{process_string_id}
-\title{process STRING ID files}
+\title{process STRING id files}
 \usage{
 process_string_id(string_file)
 }
 \arguments{
-\item{string_file}{the id file}
+\item{string_file}{the alias file}
 }
 \value{
 data.frame
 }
 \description{
-given a STRING ID file, generate a data.frame that can be used to map
+given a STRING id file, generate a data.frame that can be used to map
 various symbols
 }
