@@ -1,6 +1,6 @@
 Package: STRINGDatabaseManipulation
 Title: Provides Utilities for Working With STRING Data
-Version: 0.1.7
+Version: 0.1.8
 Authors@R: person(given = c("Robert", "M"), family = "Flight", email =
         "rflight79@gmail.com", role = c("aut", "cre"))
 Description: Provides methods and utilities for working with STRING
