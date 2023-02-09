@@ -61,86 +61,96 @@ I have smaller versions of the data files saved for examples.
 
 ``` r
 library(STRINGDatabaseManipulation)
-data("STRING11_9606_links")
-head(STRING11_9606_links)
-#>                     protein1             protein2 neighborhood fusion
-#> 233571  9606.ENSP00000255305 9606.ENSP00000261600            0      0
-#> 1373383 9606.ENSP00000368976 9606.ENSP00000480987            0      0
-#> 1920853 9606.ENSP00000472998 9606.ENSP00000362820            0      0
-#> 1919582 9606.ENSP00000472836 9606.ENSP00000481697            0      0
-#> 159715  9606.ENSP00000242104 9606.ENSP00000348772            0      0
-#> 1086730 9606.ENSP00000354558 9606.ENSP00000234256            0      0
-#>         cooccurence coexpression experimental database textmining
-#> 233571            0           49          812        0         49
-#> 1373383           0          430            0        0         42
-#> 1920853           0          737          683      900        225
-#> 1919582           0           53          413        0          0
-#> 159715            0           62            0        0        767
-#> 1086730           0            0            0        0        565
-#>         combined_score
-#> 233571             815
-#> 1373383            430
-#> 1920853            992
-#> 1919582            420
-#> 159715             772
-#> 1086730            565
+links_file = system.file("extdata", "STRING11_9606_links_raw.txt.gz", package = "STRINGDatabaseManipulation")
+ppi_data = process_string_links(links_file)
+head(ppi_data)
+#>               protein1             protein2 neighborhood fusion cooccurence coexpression
+#> 1 9606.ENSP00000000233 9606.ENSP00000382239            0      0           0          143
+#> 2 9606.ENSP00000000412 9606.ENSP00000463393            0      0           0           44
+#> 3 9606.ENSP00000001146 9606.ENSP00000242208            0      0           0            0
+#> 4 9606.ENSP00000001146 9606.ENSP00000225235            0      0           0            0
+#> 5 9606.ENSP00000002165 9606.ENSP00000485444            0      0           0            0
+#> 6 9606.ENSP00000003084 9606.ENSP00000351777            0      0           0           56
+#>   experimental database textmining combined_score
+#> 1            0        0         58            158
+#> 2            0        0        160            162
+#> 3            0        0        166            166
+#> 4            0        0        223            223
+#> 5            0      900          0            900
+#> 6          408      900        450            965
 
-data("STRING11_9606_aliases")
+aliases_file = system.file("extdata", "STRING11_9606_aliases_raw.txt.gz", package = "STRINGDatabaseManipulation")
 head(STRING11_9606_aliases)
-#>                       string           other
-#> 655068  9606.ENSP00000350937      EAL24365.1
-#> 1813946 9606.ENSP00000356015          Q5TCL7
-#> 2034111 9606.ENSP00000262320   UPI000012669E
-#> 58501   9606.ENSP00000318585            5DQC
-#> 874028  9606.ENSP00000374036 ENST00000318198
-#> 479329  9606.ENSP00000478474          C9J212
-#>                                                                                                                type
-#> 655068                                                                                           Ensembl_protein_id
-#> 1813946 BLAST_UniProt_AC Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_AC Ensembl_UniProt_AC Ensembl_UniProt_synonym
-#> 2034111                                                                                             Ensembl_UniParc
-#> 58501               BLAST_UniProt_DR_PDB Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_PDB Ensembl_UniProt_DR_PDB
-#> 874028                                                                                   Ensembl_archive_transcript
-#> 479329          BLAST_UniProt_AC Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_AC Ensembl_UniProt Ensembl_UniProt_AC
+#>                 string other
+#> 1 9606.ENSP00000361965   100
+#> 2 9606.ENSP00000269141  1000
+#> 3 9606.ENSP00000263826 10000
+#> 4 9606.ENSP00000351484 10004
+#> 5 9606.ENSP00000217455 10005
+#> 6 9606.ENSP00000365312 10006
+#>                                                                                                                                                                                 type
+#> 1 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID
+#> 2 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID
+#> 3 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID
+#> 4 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID
+#> 5 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID
+#> 6 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID
 ```
 
 ## Using Data
 
 Now lets actually do something with the STRING data. Lets find all nodes
-within so many hops (3) of a set of starting nodes.
+within so 3 hops of a set of starting nodes.
 
 We will use the example data from the package.
 
 ``` r
-library(graph)
-ppi_data = STRING11_9606_links
+set.seed(1234)
+ppi_graph = string_2_tidygraph(ppi_data)
+all_nodes = ppi_graph |>
+  tidygraph::activate(nodes) |>
+  tibble::as_tibble() |>
+  dplyr::pull(name)
+start_nodes = all_nodes |>
+  sample(size = 10)
 
-# we also trim it to a random 10000 to make this example tractable
-ppi_graph = string_2_graphBAM(ppi_data)
-start_nodes = sample(nodes(ppi_graph), 10)
-n_hop = 3
+n_hops = 3
 
-after_3 = find_edges(ppi_graph, start_nodes, n_hop)
+after_3 = find_nodes_n_hops(ppi_graph, n_hops = n_hops, start_nodes = start_nodes)
 after_3$graph
-#> A graphBAM graph with undirected edges
-#> Number of Nodes = 257 
-#> Number of Edges = 259
-
-after_32 = find_edges(ppi_graph, start_nodes, n_hop, drop_same_after_2 = FALSE)
-after_32$graph
-#> A graphBAM graph with undirected edges
-#> Number of Nodes = 257 
-#> Number of Edges = 259
+#> # A tbl_graph: 263 nodes and 264 edges
+#> #
+#> # An undirected simple graph with 3 components
+#> #
+#> # Node Data: 263 × 1 (active)
+#>   name                
+#>   <chr>               
+#> 1 9606.ENSP00000037502
+#> 2 9606.ENSP00000162749
+#> 3 9606.ENSP00000204726
+#> 4 9606.ENSP00000211998
+#> 5 9606.ENSP00000215832
+#> 6 9606.ENSP00000217233
+#> # … with 257 more rows
+#> #
+#> # Edge Data: 264 × 3
+#>    from    to weight
+#>   <int> <int>  <dbl>
+#> 1     1    23      2
+#> 2     2    32      2
+#> 3     2    81      2
+#> # … with 261 more rows
 ```
 
 In this case nothing changed, but depending on the inputs, it might.
 
 ## Visualizing
 
-If you want to visualize the results, you should be able to convert the
-`graphBAM` object to something that `ggraph` can plot.
+The nice thing about using `tidygraph`, is that we have access to the
+`ggraph` library for visualization!
 
 ## Code of Conduct
 
-Please note that the ‘STRINGDatabaseManipulation’ project is released
-with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By
-contributing to this project, you agree to abide by its terms.
+Note that the ‘STRINGDatabaseManipulation’ project is released with a
+[Contributor Code of Conduct](CODE_OF_CONDUCT.md). By contributing to
+this project, you agree to abide by its terms.
