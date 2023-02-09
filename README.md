@@ -9,19 +9,16 @@ working with STRING protein-protein interaction networks.
 ## Installation
 
 Only the development version of STRINGDatabaseManipulation is available.
-You will also need the `graph` package from Bioconductor.
 
 ``` r
-install.packages("BiocManager")
-BiocManager::install("graph")
-remotes::install_github("rmflight/STRINGDatabaseManipulation")
+remotes::install_github("moseleyBioinformaticsLab/STRINGDatabaseManipulation")
 ```
 
 ## Issues
 
 If you have a question about how to use the package, a request for
 something new to be implemented, or have a bug, please [file an
-issue](https://github.com/rmflight/STRINGDatabaseManipulation/issues).
+issue](https://github.com/moseleyBioinformaticsLab/STRINGDatabaseManipulation/issues).
 
 ## Getting Data
 
@@ -30,7 +27,7 @@ This package works with preprocessed data from STRING itself.
 You can preprocess files from STRING by downloading detail and alias
 files.
 
-For example, for human you can download the detail file by:
+For example, for human you can download the detailed link file by:
 
     # get the PPI network itself
     wget https://stringdb-static.org/download/protein.links.detailed.v11.0/9606.protein.links.detailed.v11.0.txt.gz
@@ -57,7 +54,9 @@ protein_aliases = process_string_id("9606.protein.aliases.v11.0.txt.gz")
 saveRDS(protein_aliases, file = "tmp_aliases.rda")
 ```
 
-I have smaller versions of the data files saved for examples.
+This package has smaller versions of the link and data files (10,000
+links) saved for examples, both as raw text files, and as package data
+files.
 
 ``` r
 library(STRINGDatabaseManipulation)
@@ -80,21 +79,6 @@ head(ppi_data)
 #> 6          408      900        450            965
 
 aliases_file = system.file("extdata", "STRING11_9606_aliases_raw.txt.gz", package = "STRINGDatabaseManipulation")
-head(STRING11_9606_aliases)
-#>                 string other
-#> 1 9606.ENSP00000361965   100
-#> 2 9606.ENSP00000269141  1000
-#> 3 9606.ENSP00000263826 10000
-#> 4 9606.ENSP00000351484 10004
-#> 5 9606.ENSP00000217455 10005
-#> 6 9606.ENSP00000365312 10006
-#>                                                                                                                                                                                 type
-#> 1 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID
-#> 2 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID
-#> 3 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID
-#> 4 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID
-#> 5 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID
-#> 6 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID
 ```
 
 ## Using Data
