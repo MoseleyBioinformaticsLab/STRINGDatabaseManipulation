@@ -33,12 +33,12 @@ with option that final set of edges go to known nodes
 }
 \details{
 One frequently encountered case will be a set of nodes that do:
-  N1 --> N2 --> N1 (because the network is assumed to be undirected), where
-  after a single hop from N1 we reach N2, and then a second hop returns to N1.
-  Even in the case where the end_nodes are the same as the start_nodes, this
-  is likely \emph{not} useful information. So \code{drop_same_after_1 = TRUE}
-  will set the results so that these edge paths are not returned and kept
-  in the final graph.
+N1 --> N2 --> N1 (because the network is assumed to be undirected), where
+after a single hop from N1 we reach N2, and then a second hop returns to N1.
+Even in the case where the end_nodes are the same as the start_nodes, this
+is likely \emph{not} useful information. So \code{drop_same_after_1 = TRUE}
+will set the results so that these edge paths are not returned and kept
+in the final graph.
 }
 \examples{
 library(STRINGDatabaseManipulation)

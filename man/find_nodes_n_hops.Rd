@@ -30,17 +30,21 @@ list
 Find the paths from start_nodes to end_nodes that are within N nodes of the start.
 }
 \details{
-This algorithm seeks to find all paths that traverse **up-to** N intermediate nodes between
-  the provided start and end nodes. As the edge paths are built up, a tibble of edges is generated
-  that includes `from.0` to `from.N` (where N is the number of intermediate nodes, see `n_hops`),
-  to finally `to`, describing the traversal of nodes.
+This algorithm seeks to find all paths that traverse \strong{up-to} N intermediate nodes between
+the provided start and end nodes. As the edge paths are built up, a tibble of edges is generated
+that includes \code{from.0} to \code{from.N} (where N is the number of intermediate nodes, see \code{n_hops}),
+to finally \code{to}, describing the traversal of nodes.
 
-  **Note** that the resultant edge set in the graph may include more than these edges, as the filtering of the graph
-  is done based on the edges found, and not by the subset of edges. Filtering of the graph by
-  the found edges may be implemented at a later date.
+This does mean, to find only the \strong{direct} neighbors, you should use \code{n_hops = 0}.
 
-  Returned is a list with:
-  * graph: the filtered graph that contains only those nodes that were found by the hopping algorithm
-  * node_path_id: the paths found and identified by node numbers
-  * node_path_name: the paths found and identified by node names from the graph
+\strong{Note} that the resultant edge set in the graph may include more than these edges, as the filtering of the graph
+is done based on the edges found, and not by the subset of edges. Filtering of the graph by
+the found edges may be implemented at a later date.
+
+Returned is a list with:
+\itemize{
+\item \strong{graph}: the filtered graph that contains only those nodes that were found by the hopping algorithm
+\item \strong{node_path_id}: the paths found and identified by node numbers
+\item \strong{node_path_name}: the paths found and identified by node names from the graph
+}
 }

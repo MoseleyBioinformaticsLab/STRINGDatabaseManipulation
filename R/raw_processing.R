@@ -48,7 +48,14 @@ process_string_id = function(string_file){
 #' process STRING alias files
 #'
 #' given a STRING alias file, generate a data.frame that can be used to map
-#' various symbols
+#' various symbols.
+#'
+#' @details The STRING alias file actually doesn't have a header, so the names we use
+#'   here for the columns are:
+#'
+#'   * **string**: the STRING ID, as ORG1.ENSPXXXXXX, *9606.ENSP00000269305* is human, TP53
+#'   * **other**: the other ID, whatever that is, *TP53* for this example
+#'   * **type**: the source of the alias, *Ensembl_EntrezGene* in this case
 #'
 #' @param string_aliases the alias file
 #' @export

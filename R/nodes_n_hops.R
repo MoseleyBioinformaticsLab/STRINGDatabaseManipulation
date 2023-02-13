@@ -42,14 +42,17 @@ string_2_tidygraph = function(string_data, use_weights = NULL, directed = FALSE)
 #'   that includes `from.0` to `from.N` (where N is the number of intermediate nodes, see `n_hops`),
 #'   to finally `to`, describing the traversal of nodes.
 #'
+#'   This does mean, to find only the **direct** neighbors, you should use `n_hops = 0`.
+#'
 #'   **Note** that the resultant edge set in the graph may include more than these edges, as the filtering of the graph
 #'   is done based on the edges found, and not by the subset of edges. Filtering of the graph by
 #'   the found edges may be implemented at a later date.
 #'
 #'   Returned is a list with:
-#'   * graph: the filtered graph that contains only those nodes that were found by the hopping algorithm
-#'   * node_path_id: the paths found and identified by node numbers
-#'   * node_path_name: the paths found and identified by node names from the graph
+#'
+#'   * **graph**: the filtered graph that contains only those nodes that were found by the hopping algorithm
+#'   * **node_path_id**: the paths found and identified by node numbers
+#'   * **node_path_name**: the paths found and identified by node names from the graph
 #'
 #' @return list
 #' @export
@@ -218,7 +221,7 @@ string_2_graphBAM = function(string_data, use_weights = NULL){
 #'   N1 --> N2 --> N1 (because the network is assumed to be undirected), where
 #'   after a single hop from N1 we reach N2, and then a second hop returns to N1.
 #'   Even in the case where the end_nodes are the same as the start_nodes, this
-#'   is likely \emph{not} useful information. So \code{drop_same_after_1 = TRUE}
+#'   is likely *not* useful information. So `drop_same_after_1 = TRUE`
 #'   will set the results so that these edge paths are not returned and kept
 #'   in the final graph.
 #'

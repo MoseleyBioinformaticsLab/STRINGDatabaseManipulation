@@ -14,5 +14,14 @@ data.frame
 }
 \description{
 given a STRING alias file, generate a data.frame that can be used to map
-various symbols
+various symbols.
+}
+\details{
+The STRING alias file actually doesn't have a header, so the names we use
+here for the columns are:
+\itemize{
+\item \strong{string}: the STRING ID, as ORG1.ENSPXXXXXX, \emph{9606.ENSP00000269305} is human, TP53
+\item \strong{other}: the other ID, whatever that is, \emph{TP53} for this example
+\item \strong{type}: the source of the alias, \emph{Ensembl_EntrezGene} in this case
+}
 }

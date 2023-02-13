@@ -1,11 +1,11 @@
-#' STRING11_9606_links
+#' STRING11.5_9606_links
 #'
-#' Dataset containing the detailed links from v11 of the STRING database for
-#' human. combined_score >= 400, and 10000 randomly chosen links. THIS IS NOT
+#' Dataset containing the detailed links from v11.5 of the STRING database for
+#' human. experimental >= 400, links to TP53 or EGFR, as well as 10000 randomly chosen links. THIS IS NOT
 #' THE COMPLETE DATASET!
 #'
 #'
-#' @format A data.frame with 10000 rows and 10 variables:
+#' @format A data.frame with 21070 rows and 10 variables:
 #' \describe{
 #'   \item{protein1}{first node in edge}
 #'   \item{protein2}{second node in edge}
@@ -18,22 +18,22 @@
 #'   \item{textmining}{score from textmining}
 #'   \item{combined_score}{total combined score from all evidences}}
 #'
-#'   Processed by RMF
+#'   Processed by RMF on 2023-02-10
 #'
-#' @source \url{https://stringdb-static.org/download/protein.links.detailed.v11.0/9606.protein.links.detailed.v11.0.txt.gz}
-"STRING11_9606_links"
+#' @source <https://stringdb-static.org/download/protein.links.detailed.v11.5/9606.protein.links.detailed.v11.5.txt.gz>
+"STRING11.5_9606_links"
 
-#' STRING11_9606_aliases
+#' STRING11.5_9606_aliases
 #'
-#' Dataset containing various STRING aliases.
+#' Dataset containing Entrez and RecName aliases.
 #'
-#' @format A data.frame with 10000 rows and 3 variables:
+#' @format A data.frame with 58422 rows and 3 variables:
 #' \describe{
 #'   \item{string}{the STRING ID}
 #'   \item{other}{the other alias}
-#'   \item{type}{the source of the alias (space separated for multiple sources)}}
+#'   \item{type}{the source of the alias}}
 #'
-#' Processed by RMF
+#' Processed by RMF on 2023-02-10
 #'
-#' @source \url{https://stringdb-static.org/download/protein.aliases.v11.0/9606.protein.aliases.v11.0.txt.gz}
-"STRING11_9606_aliases"
+#' @source <https://stringdb-static.org/download/protein.aliases.v11.5/9606.protein.aliases.v11.5.txt.gz>
+"STRING11.5_9606_aliases"

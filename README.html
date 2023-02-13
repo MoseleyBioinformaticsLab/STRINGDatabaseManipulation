@@ -605,122 +605,190 @@ padding-top: 0px;
 
 <h1 id="stringdatabasemanipulation">STRINGDatabaseManipulation</h1>
 <p>The goal of STRINGDatabaseManipulation is to provide functions for
-working with STRING protein-protein interaction networks.</p>
+reading in and manipulating <a href="https://string-db.org/">STRING</a>
+protein-protein interaction networks.</p>
 <h2 id="installation">Installation</h2>
 <p>Only the development version of STRINGDatabaseManipulation is
-available. You will also need the <code>graph</code> package from
-Bioconductor.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">&quot;graph&quot;</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;rmflight/STRINGDatabaseManipulation&quot;</span>)</span></code></pre></div>
+available.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;moseleyBioinformaticsLab/STRINGDatabaseManipulation&quot;</span>)</span></code></pre></div>
 <h2 id="issues">Issues</h2>
 <p>If you have a question about how to use the package, a request for
-something new to be implemented, or have a bug, please <a href="https://github.com/rmflight/STRINGDatabaseManipulation/issues">file
+something new to be implemented, or have a bug, please <a href="https://github.com/moseleyBioinformaticsLab/STRINGDatabaseManipulation/issues">file
 an issue</a>.</p>
 <h2 id="getting-data">Getting Data</h2>
 <p>This package works with preprocessed data from STRING itself.</p>
-<p>You can preprocess files from STRING by downloading detail and alias
-files.</p>
-<p>For example, for human you can download the detail file by:</p>
+<p>You can preprocess files from STRING by downloading link detail and
+alias files. These files are available from the <a href="https://string-db.org/cgi/download">STRING download page</a>. I
+<strong>do not</strong> recommend trying to work with the
+<strong>full</strong> interaction network across all species, but rather
+download files for your specific species of interest. For example, you
+can filter to just the <a href="https://string-db.org/cgi/download?&amp;species_text=Homo+sapiens">human
+files</a>.</p>
+<p>We can get the files we want at the command line using a tool like
+<code>wget</code>:</p>
 <pre><code># get the PPI network itself
-wget https://stringdb-static.org/download/protein.links.detailed.v11.0/9606.protein.links.detailed.v11.0.txt.gz
+wget https://stringdb-static.org/download/protein.links.detailed.v11.5/9606.protein.links.detailed.v11.5.txt.gz
 # get aliases
-wget https://stringdb-static.org/download/protein.aliases.v11.0/9606.protein.aliases.v11.0.txt.gz</code></pre>
-<p>Note: these links become available after filtering by first choosing
-an organism.</p>
+wget https://stringdb-static.org/download/protein.aliases.v11.5/9606.protein.aliases.v11.5.txt.gz</code></pre>
 <p>And then process them so they are easier to use:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(STRINGDatabaseManipulation)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># assuming data is in the file, you would do:</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>ppi_data <span class="ot">=</span> <span class="fu">process_string_data</span>(<span class="st">&quot;9606.protein.links.detailed.v11.0.txt.gz&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>ppi_data <span class="ot">=</span> <span class="fu">process_string_links</span>(<span class="st">&quot;9606.protein.links.detailed.v11.5.txt.gz&quot;</span>)</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># save it for later</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(ppi_data, <span class="at">file =</span> <span class="st">&quot;tmp_ppi_data.rda&quot;</span>)</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># process aliases</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>protein_aliases <span class="ot">=</span> <span class="fu">process_string_id</span>(<span class="st">&quot;9606.protein.aliases.v11.0.txt.gz&quot;</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>protein_aliases <span class="ot">=</span> <span class="fu">process_string_aliases</span>(<span class="st">&quot;9606.protein.aliases.v11.5.txt.gz&quot;</span>)</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># save for later</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(protein_aliases, <span class="at">file =</span> <span class="st">&quot;tmp_aliases.rda&quot;</span>)</span></code></pre></div>
-<p>I have smaller versions of the data files saved for examples.</p>
+<p>This package has smaller versions of the link and data files (10,000
+links) saved for examples, both as raw text files, and as package data
+files. These files have been filtered to those links with an
+<strong>experimental</strong> score &gt;= 400, as well as links that
+include EGFR and TP53.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(STRINGDatabaseManipulation)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>links_file <span class="ot">=</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;STRING11_9606_links_raw.txt.gz&quot;</span>, <span class="at">package =</span> <span class="st">&quot;STRINGDatabaseManipulation&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>links_file <span class="ot">=</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;STRING11.5_9606_links_raw.txt.gz&quot;</span>, <span class="at">package =</span> <span class="st">&quot;STRINGDatabaseManipulation&quot;</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>ppi_data <span class="ot">=</span> <span class="fu">process_string_links</span>(links_file)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ppi_data)</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               protein1             protein2 neighborhood fusion cooccurence coexpression</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 9606.ENSP00000000233 9606.ENSP00000382239            0      0           0          143</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 9606.ENSP00000000412 9606.ENSP00000463393            0      0           0           44</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 9606.ENSP00000001146 9606.ENSP00000242208            0      0           0            0</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 9606.ENSP00000001146 9606.ENSP00000225235            0      0           0            0</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 9606.ENSP00000002165 9606.ENSP00000485444            0      0           0            0</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 9606.ENSP00000003084 9606.ENSP00000351777            0      0           0           56</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 9606.ENSP00000001008 9606.ENSP00000354558            0      0           0           69</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 9606.ENSP00000003084 9606.ENSP00000306330            0      0           0            0</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 9606.ENSP00000003084 9606.ENSP00000449404            0      0           0            0</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 9606.ENSP00000005257 9606.ENSP00000353590            0      0           0           51</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 9606.ENSP00000005340 9606.ENSP00000262320            0      0           0           86</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 9606.ENSP00000005340 9606.ENSP00000335677            0      0           0            0</span></span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   experimental database textmining combined_score</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1            0        0         58            158</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2            0        0        160            162</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3            0        0        166            166</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4            0        0        223            223</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5            0      900          0            900</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6          408      900        450            965</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1          835        0        343            890</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2          810        0         84            818</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3          550        0        875            941</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4          653        0         64            664</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5          987      900        475            999</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6          476        0         87            501</span></span>
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>aliases_file <span class="ot">=</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;STRING11_9606_aliases_raw.txt.gz&quot;</span>, <span class="at">package =</span> <span class="st">&quot;STRINGDatabaseManipulation&quot;</span>)</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(STRING11_9606_aliases)</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                 string other</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 9606.ENSP00000361965   100</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 9606.ENSP00000269141  1000</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 9606.ENSP00000263826 10000</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 9606.ENSP00000351484 10004</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 9606.ENSP00000217455 10005</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 9606.ENSP00000365312 10006</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                                                                                                                 type</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID</span></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 BLAST_UniProt_DR_GeneID Ensembl_HGNC_Entrez_Gene_ID Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI) Ensembl_HGNC_UniProt_ID(supplied_by_UniProt)_DR_GeneID Ensembl_UniProt_DR_GeneID</span></span></code></pre></div>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>aliases_file <span class="ot">=</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;STRING11.5_9606_aliases_raw.txt.gz&quot;</span>, <span class="at">package =</span> <span class="st">&quot;STRINGDatabaseManipulation&quot;</span>)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>ppi_aliases <span class="ot">=</span> <span class="fu">process_string_aliases</span>(aliases_file)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ppi_aliases)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                 string   other                                          type</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 9606.ENSP00000001008    2288                   Ensembl_HGNC_Entrez_Gene_ID</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 9606.ENSP00000001008    2288 Ensembl_HGNC_Entrez_Gene_ID(supplied_by_NCBI)</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 9606.ENSP00000001008 5.2.1.8                   BLAST_UniProt_DE_RecName_EC</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 9606.ENSP00000001008   FKBP4                            Ensembl_EntrezGene</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 9606.ENSP00000001008  FKBP51                    Ensembl_EntrezGene_synonym</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 9606.ENSP00000001008  FKBP52                    Ensembl_EntrezGene_synonym</span></span></code></pre></div>
 <h2 id="using-data">Using Data</h2>
-<p>Now lets actually do something with the STRING data. Lets find all
-nodes within so 3 hops of a set of starting nodes.</p>
+<p>Now lets actually do something with the STRING data. The most common
+analysis we want to do is find proteins that interact (directly or
+indirectly) with one or more query proteins.</p>
 <p>We will use the example data from the package.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>ppi_graph <span class="ot">=</span> <span class="fu">string_2_tidygraph</span>(ppi_data)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>all_nodes <span class="ot">=</span> ppi_graph <span class="sc">|&gt;</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  tidygraph<span class="sc">::</span><span class="fu">activate</span>(nodes) <span class="sc">|&gt;</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(name)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>start_nodes <span class="ot">=</span> all_nodes <span class="sc">|&gt;</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample</span>(<span class="at">size =</span> <span class="dv">10</span>)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>n_hops <span class="ot">=</span> <span class="dv">3</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>after_3 <span class="ot">=</span> <span class="fu">find_nodes_n_hops</span>(ppi_graph, <span class="at">n_hops =</span> n_hops, <span class="at">start_nodes =</span> start_nodes)</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>after_3<span class="sc">$</span>graph</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tbl_graph: 263 nodes and 264 edges</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # An undirected simple graph with 3 components</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # Node Data: 263 × 1 (active)</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   name                </span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;               </span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 9606.ENSP00000037502</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 9606.ENSP00000162749</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 9606.ENSP00000204726</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 9606.ENSP00000211998</span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 9606.ENSP00000215832</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 9606.ENSP00000217233</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 257 more rows</span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #</span></span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # Edge Data: 264 × 3</span></span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    from    to weight</span></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;  &lt;dbl&gt;</span></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     1    23      2</span></span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     2    32      2</span></span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     2    81      2</span></span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 261 more rows</span></span></code></pre></div>
-<p>In this case nothing changed, but depending on the inputs, it
-might.</p>
-<h2 id="visualizing">Visualizing</h2>
-<p>The nice thing about using <code>tidygraph</code>, is that we have
-access to the <code>ggraph</code> library for visualization!</p>
+<p>To filter the data, we can use <code>dplyr</code> to choose which
+evidence or set of evidences to use a filter. Here we will use
+<code>combined_score</code> &gt;= 400 (it’s actually already filtered,
+but this is to show how we can use it).</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ppi_filtered <span class="ot">=</span> ppi_data <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(combined_score <span class="sc">&gt;=</span> <span class="dv">400</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(ppi_data)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 21070    10</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(ppi_filtered)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 21070    10</span></span></code></pre></div>
+<p>In this case it doesn’t change the number of interactions, because
+the data was pre-filtered to make it tractable for inclusion in the
+package.</p>
+<h2 id="tp53">TP53</h2>
+<p>Lets take everyone’s favorite cancer gene, TP53, and look for those
+proteins that experimentally are known to interact with it. We will find
+the STRING-db ID, and then query everything that is connected to it.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ppi_graph <span class="ot">=</span> <span class="fu">string_2_tidygraph</span>(ppi_data)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>tp53_alias <span class="ot">=</span> ppi_aliases <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(other <span class="sc">%in%</span> <span class="st">&quot;TP53&quot;</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>tp53_alias</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                 string other               type</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 9606.ENSP00000269305  TP53 Ensembl_EntrezGene</span></span></code></pre></div>
+<p>Now we can go fetch the neighbors of our query protein (n_hops = 0),
+and find everything that it interacts with. Notice,
+<code>n_hops = 0</code>! This is because the <code>hops</code> refers to
+hops over other proteins. To find just the interacting pairs, we are
+doing <strong>0</strong> hops.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>tp53_interactions <span class="ot">=</span> <span class="fu">find_nodes_n_hops</span>(ppi_graph, <span class="at">n_hops =</span> <span class="dv">0</span>, <span class="at">start_nodes =</span> tp53_alias<span class="sc">$</span>string)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>tp53_interactions<span class="sc">$</span>graph</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tbl_graph: 322 nodes and 479 edges</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # An undirected simple graph with 1 component</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # Node Data: 322 × 1 (active)</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   name                </span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;               </span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 9606.ENSP00000005340</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 9606.ENSP00000011619</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 9606.ENSP00000025008</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 9606.ENSP00000156084</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 9606.ENSP00000212015</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 9606.ENSP00000215754</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 316 more rows</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # Edge Data: 479 × 3</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    from    to weight</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;  &lt;dbl&gt;</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     1    51      2</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     1    68      2</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     2    68      2</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 476 more rows</span></span></code></pre></div>
+<p>Here we can see that the returned interactions with TP53 includes
+another 321 proteins. This is in <strong>stark</strong> contrast to the
+<strong>maximum of 50</strong> first shell entries returned by the
+STRING web tool. In addition to the large number of interacting
+proteins, notice that many of them are connected to each other as well,
+given the number of edges compared to the number of nodes.</p>
+<p>We can also examine, for this limited network, how many genes TP53
+interacts with when we allow one protein in between. For this example,
+this is likely to be lower than the real number, as it is a limited
+dataset. In reality, TP53 interactors with a single hop is an incredibly
+large number of interactors that you will want to watch your memory
+usage.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>tp53_onehop <span class="ot">=</span> <span class="fu">find_nodes_n_hops</span>(ppi_graph, <span class="at">n_hops =</span> <span class="dv">1</span>, <span class="at">start_nodes =</span> tp53_alias<span class="sc">$</span>string)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>tp53_onehop<span class="sc">$</span>graph</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tbl_graph: 1275 nodes and 2461 edges</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # An undirected simple graph with 1 component</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # Node Data: 1,275 × 1 (active)</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   name                </span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;               </span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 9606.ENSP00000001008</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 9606.ENSP00000003084</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 9606.ENSP00000005340</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 9606.ENSP00000011619</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 9606.ENSP00000011653</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 9606.ENSP00000025008</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 1,269 more rows</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # Edge Data: 2,461 × 3</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    from    to weight</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;  &lt;dbl&gt;</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     1   676      2</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     2   386      2</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     3   149      2</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 2,458 more rows</span></span></code></pre></div>
+<p>Even with the limited network, we end up with a whopping 1274
+proteins that interact one hop out from TP53!</p>
+<h2 id="to-do">To Do</h2>
+<p>There are several improvements we have in mind to make to make this
+package more useful:</p>
+<ul>
+<li><a href="https://github.com/MoseleyBioinformaticsLab/STRINGDatabaseManipulation/issues/3">functions
+to easily add protein identifiers to the returned network.</a></li>
+<li><a href="https://github.com/MoseleyBioinformaticsLab/STRINGDatabaseManipulation/issues/5">take
+pathway data from the <code>graphite</code> package and work with it, we
+aren’t actually limited to STRING data.</a></li>
+<li><a href="https://github.com/MoseleyBioinformaticsLab/STRINGDatabaseManipulation/issues/2">visualization
+examples.</a></li>
+<li><a href="https://github.com/MoseleyBioinformaticsLab/STRINGDatabaseManipulation/issues/1">tests.
+We really need more tests.</a></li>
+<li><a href="https://github.com/MoseleyBioinformaticsLab/STRINGDatabaseManipulation/issues/4">could
+we use <code>sqlite</code> databases to enable analysis of things with
+<strong>really</strong> large numbers of interactors?</a></li>
+</ul>
 <h2 id="code-of-conduct">Code of Conduct</h2>
 <p>Note that the ‘STRINGDatabaseManipulation’ project is released with a
 <a href="CODE_OF_CONDUCT.md">Contributor Code of Conduct</a>. By
