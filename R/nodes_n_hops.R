@@ -162,6 +162,57 @@ rename_cols = function(in_tibble, old_names, new_names){
   in_tibble
 }
 
+#' find nodes within N interlinks
+#'
+#' Find the paths from start_nodes to end_nodes that are within N interlinked nodes of the start.
+#'
+#' @param tidy_graph the graph to query
+#' @param n_interlinked how many interlinked nodes to cross to the end nodes
+#' @param start_nodes the starting nodes (defaults to all nodes)
+#' @param end_nodes the ending nodes (defaults to all nodes in the graph)
+#' @param exclude_self should circular paths back to the start node be excluded? (default = TRUE)
+#'
+#' @details This algorithm seeks to find all paths that traverse **up-to** N interlinked nodes between
+#'   the provided start and end nodes. As the edge paths are built up, a tibble of edges is generated
+#'   that includes `from.0` to `from.N` (where N is the number of interlinked nodes, see `n_interlinked`),
+#'   to finally `to`, describing the traversal of nodes.
+#'
+#'   This does mean, to find only the **direct** neighbors, you should use `n_interlinked = 0`.
+#'
+#'   **Note** that the resultant edge set in the graph may include more than these edges, as the filtering of the graph
+#'   is done based on the edges found, and not by the subset of edges. Filtering of the graph by
+#'   the found edges may be implemented at a later date.
+#'
+#'   Returned is a list with:
+#'
+#'   * **graph**: the filtered graph that contains only those nodes that were found by the hopping algorithm
+#'   * **node_path_id**: the paths found and identified by node numbers
+#'   * **node_path_name**: the paths found and identified by node names from the graph
+#'
+#' @return list
+#' @export
+find_nodes_n_interlinked = function(tidy_graph, n_interlinked = 1, start_nodes = NULL, end_nodes = NULL, exclude_self = TRUE)
+{
+  # the code is actually just a layer over the old n_hops implementation, and I don't
+  # want two copies around.
+  # Eventually the old one will be removed, but this is a hack to keep it around.
+  n_hops = n_interlinked
+  out_interlinked = find_nodes_n_hops(tidy_graph, n_hops = n_hops,
+                                      start_nodes = start_nodes, end_nodes = end_nodes,
+                                      exclude_self = exclude_self)
+  return(out_interlinked)
+}
+
+rename_cols = function(in_tibble, old_names, new_names){
+  for (iname in seq_along(old_names)) {
+    tmp_old = old_names[iname]
+    tmp_new = new_names[iname]
+    match_old = which(names(in_tibble) %in% tmp_old)
+    names(in_tibble)[match_old] = tmp_new
+  }
+  in_tibble
+}
+
 
 #' strip species id from identifier
 #'

@@ -3,6 +3,7 @@
 export(find_edges)
 export(find_intersecting_nodes)
 export(find_nodes_n_hops)
+export(find_nodes_n_interlinked)
 export(process_string_aliases)
 export(process_string_data)
 export(process_string_id)
